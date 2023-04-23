@@ -24,4 +24,4 @@ git clone https://github.com/wukongxzero/spiral-aruco-drone-control
 
 change directory into ros2_ws
 
-click on colcon build --symlink install 
+click on colcon build --symlink-install 
