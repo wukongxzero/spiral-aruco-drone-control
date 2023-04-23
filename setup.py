@@ -10,7 +10,8 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-        ('share/' + package_name, ['launch/spiralplusaruco_launch.py']),
+        ('share/' + package_name, ['launch/aruco_launch.py']),
+        ('share/' + package_name, ['launch/spiral_launch.py']),
         ('share/' + package_name, ['launch/waypoint_launch.py'])
 
     ],
@@ -23,7 +24,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            "spiralplusaruco_node = drone_control.spiralplusaruco_node:main",
+            "spiral_node = drone_control.spiral_node:main",
+            "aruco_node = drone_control.aruco_node:main",
             "waypoint_node = drone_controller.waypoint_node:main"
         ],
     },

@@ -22,16 +22,16 @@ def generate_launch_description():
     )
 
     # Start the go_to_spiralplusaruco_node
-    waypoint_node = Node(
+    aruco_node = Node(
         package='my_drone_package',
-        executable='spiralplusaruco.py',
-        name='waypoint_node',
+        executable='aruco_node.py',
+        name='aruco_node',
         output='screen',
     )
     # Create the launch description object and add the nodes
     ld = LaunchDescription()
     ld.add_action(px4)
     ld.add_action(mavsdk_ros)
-    ld.add_action(waypoint_node)
+    ld.add_action(aruco_node)
 
     return ld

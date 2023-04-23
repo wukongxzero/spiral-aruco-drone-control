@@ -6,6 +6,7 @@ from mav_msgs.msg import PositionTarget
 from mavsdk import System, OffboardError
 from mavsdk.offboard import Attitude
 from mavsdk.mission import MissionPlan, MissionItem, MissionItemWaypoint
+from mavsdk.offboard import Attitude, OffboardError
 
 
 class GoToWaypointNode(Node):
@@ -41,4 +42,4 @@ class GoToWaypointNode(Node):
 
         # Upload mission to drone
         try:
-            await drone.mission.upload_mission(mission)
+            await drone.mission.upload_mission(mission_plan)

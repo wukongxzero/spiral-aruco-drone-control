@@ -4,13 +4,12 @@
   <name>drone_control</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
-  <maintainer email="pavan@todo.todo">pavan</maintainer>
+  <maintainer email="pavankushal15729@gmail.com">pavan</maintainer>
   <license>TODO: License declaration</license>
 
   <depend>rclpy</depend>
   <build_depend>ament_python</build_depend>
   
-  <exec_depend>rclpy</exec_depend>
   <exec_depend>mavsdk_ros</exec_depend>
   <exec_depend>px4_ros_com</exec_depend>
   <exec_depend>px4_msgs</exec_depend>
