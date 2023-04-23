@@ -1,45 +1,57 @@
+#!/usr/bin/env python3
+
 import asyncio
-import rclpy
-from rclpy.node import Node
-from px4_msgs.msg import PositionSetpoint
-from mav_msgs.msg import PositionTarget
-from mavsdk import System, OffboardError
-from mavsdk.offboard import Attitude
-from mavsdk.mission import MissionPlan, MissionItem, MissionItemWaypoint
-from mavsdk.offboard import Attitude, OffboardError
+from px4py import *
+from mavsdk import System
 
+async def run():
+    # Connect to the PX4 flight stack
+    px4 = PX4()
+    px4.start()
 
-class GoToWaypointNode(Node):
-    def __init__(self):
-        super().__init__('go_to_waypoint_node')
+    # Connect to the drone via MAVSDK
+    drone = System()
+    await drone.connect(system_address="udp://:14540")
 
-        self.create_subscription(PositionSetpoint, 'mavros/setpoint_position/local', self.callback, 10)
-        self.pub_setpoint_raw = self.create_publisher(PositionTarget, 'mavros/setpoint_raw/local', 10)
+    print("Waiting for vehicle to connect...")
+    async for state in px4.vehicle_state():
+        if state.connected:
+            print("-- Connected to vehicle!")
+            break
 
-        asyncio.get_event_loop().run_until_complete(self.run())
+    print("Waiting for drone to connect...")
+    async for state in drone.core.connection_state():
+        if state.is_connected:
+            print(f"-- Connected to drone!")
+            break
 
-    async def run(self):
-        # Connect to drone using mavsdk
-        drone = System()
-        await drone.connect(system_address="udp://:14540")
+    print("Waiting for drone to have a global position estimate...")
+    async for health in drone.telemetry.health():
+        if health.is_global_position_ok and health.is_home_position_ok:
+            print("-- Global position state is good enough for flying.")
+            break
 
-        # Wait for drone to be ready
-        async for state in drone.core.connection_state():
-            if state.is_connected:
-                break
+    print("Fetching AMSL altitude at home location....")
+    async for home in px4.home_position():
+        absolute_altitude = home.altitude
+        break
 
-        # Set offboard mode
-        try:
-            await drone.offboard.set_mode(Attitude())
-        except OffboardError as error:
-            self.get_logger().error(f"Could not set offboard mode: {error}")
+    print("-- Arming")
+    await px4.commander.arm()
 
-        # Create mission plan with two waypoints
-        mission_items = []
-        mission_items.append(MissionItem(mission_item=MissionItemWaypoint(0, 0, 0, 0, 0, 0, 0)))
-        mission_items.append(MissionItem(mission_item=MissionItemWaypoint(0, 0, 5, 0, 0, 0, 0)))
-        mission_plan = MissionPlan(mission_items)
+    print("-- Taking off")
+    await px4.commander.takeoff()
 
-        # Upload mission to drone
-        try:
-            await drone.mission.upload_mission(mission_plan)
+    await asyncio.sleep(1)
+    # To fly drone 20m above the ground plane
+    flying_alt = absolute_altitude + 20.0
+    # goto_location() takes AMSL altitude
+    await px4.commander.goto_location(47.397606, 8.543060, flying_alt, 0)
+
+    while True:
+        print("Staying connected, press Ctrl-C to exit")
+        await asyncio.sleep(1)
+
+if __name__ == "__main__":
+    # Run the asyncio loop
+    asyncio.run(run())
