@@ -1,6 +1,6 @@
 # spiral-aruco-drone-control
 
-here is the way to run it on your machine, thankfully ros2 has deleted the entirety of sdf written launch files .. which means consequent pcs have better support but the issue with using ros2 humble was that it needs gazebo garden no gazebo classic and most of the libraries have dependency conflicts, i tried and tested the thing it sucks a lot.
+Here is the way to run it on your machine, thankfully ros2 has deleted the entirety of sdf written launch files .. which means consequent pcs have better support but the issue with using ros2 humble was that it needs gazebo garden no gazebo classic and most of the libraries have dependency conflicts, i tried and tested the thing it sucks a lot.
 
 so here are the requirements to run the code:
 
